@@ -51,7 +51,7 @@ object ScalafixCatsSimpleImports {
        |Language => Scala
        |Symbols => 9 entries
        |Occurrences => 25 entries
-       |Synthetics => 10 entries
+       |Synthetics => 8 entries
        |
        |Symbols:
        |_empty_/ScalafixCatsSimpleImports. => final object ScalafixCatsSimpleImports extends AnyRef { +3 decls }
@@ -124,25 +124,25 @@ object ScalafixCatsSimpleImports {
        |[10:4..13:13): for {
        |      r <- "en".pure[M]
        |      _ <- "to".pure[M]
-       |    } yield r => orig("en".pure[M])(evidence$1).flatMap[String]({(r) => orig("to".pure[M])(evidence$1).map[String]({(_) => orig(r)})})
+       |    } yield r => implicits.toFlatMapOps[M, String](orig("en".pure[M])(evidence$1))(evidence$1).flatMap[String]({(r) => implicits.toFunctorOps[M, String](orig("to".pure[M])(evidence$1))(evidence$1).map[String]({(_) => orig(r)})})
+       |  implicits => cats/implicits.
+       |  toFlatMapOps => cats/FlatMap.ToFlatMapOps#toFlatMapOps().
+       |  M => _empty_/ScalafixCatsSimpleImports.foo().[M]
+       |  String => java/lang/String#
        |  evidence$1 => _empty_/ScalafixCatsSimpleImports.foo().(evidence$1)
        |  flatMap => cats/FlatMap.Ops#flatMap().
-       |  String => java/lang/String#
        |  r => local0
+       |  toFunctorOps => cats/Functor.ToFunctorOps#toFunctorOps().
        |  map => cats/Functor.Ops#map().
        |  _ => local1
        |[11:11..11:15): "en" => implicits.catsSyntaxApplicativeId[String](*)
        |  implicits => cats/implicits.
        |  catsSyntaxApplicativeId => cats/syntax/ApplicativeSyntax#catsSyntaxApplicativeId().
        |  String => java/lang/String#
-       |[11:11..11:23): "en".pure[M] => *(evidence$1)
-       |  evidence$1 => _empty_/ScalafixCatsSimpleImports.foo().(evidence$1)
        |[12:11..12:15): "to" => implicits.catsSyntaxApplicativeId[String](*)
        |  implicits => cats/implicits.
        |  catsSyntaxApplicativeId => cats/syntax/ApplicativeSyntax#catsSyntaxApplicativeId().
-       |  String => java/lang/String#
-       |[12:11..12:23): "to".pure[M] => *(evidence$1)
-       |  evidence$1 => _empty_/ScalafixCatsSimpleImports.foo().(evidence$1)""".stripMargin
+       |  String => java/lang/String#""".stripMargin
   )
 
   // This tests a case where SymbolOps.toSemantic crashes

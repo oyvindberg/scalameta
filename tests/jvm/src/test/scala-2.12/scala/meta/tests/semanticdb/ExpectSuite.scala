@@ -33,6 +33,7 @@ class ExpectSuite extends FunSuite {
     test("metac.expect") {
       import MetacExpect._
       this.assertNoDiff(loadObtained, loadExpected)
+      //      saveExpected()
     }
     test("metac-metacp.diff") {
       import MetacMetacpDiffExpect._

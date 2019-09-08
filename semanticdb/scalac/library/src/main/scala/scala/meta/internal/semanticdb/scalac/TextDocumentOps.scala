@@ -456,7 +456,7 @@ trait TextDocumentOps { self: SemanticdbOps =>
                     typeArguments = typeArguments
                   )
                 case gtree: g.Select if isForSynthetic(gtree) =>
-                  val qualifier = forSyntheticOrOrig(gtree.qualifier)
+                  val qualifier = forSyntheticOrOrig(true)(gtree.qualifier)
                   s.SelectTree(
                     qualifier = qualifier,
                     id = Some(gtree.toSemanticId)
@@ -467,18 +467,18 @@ trait TextDocumentOps { self: SemanticdbOps =>
             def forMethodBody(gtree: g.Tree): s.Tree = gtree match {
               case gtree: g.Function =>
                 val names = gtree.vparams.map(_.toSemanticId)
-                val bodyTree = forSyntheticOrOrig(gtree.body)
+                val bodyTree = forSyntheticOrOrig(true)(gtree.body)
                 s.FunctionTree(names, bodyTree)
               case _ =>
                 gtree.toSemanticOriginal
             }
 
-            def forSyntheticOrOrig(gtree: g.Tree): s.Tree = {
+            def forSyntheticOrOrig(original: Boolean)(gtree: g.Tree): s.Tree = {
               isVisitedParent += gtree
               gtree match {
                 case gtree: g.ApplyToImplicitArgs =>
-                  val implicitArgs = gtree.args.map(_.toSemanticTree)
-                  val innerTree = forSyntheticOrOrig(gtree.fun)
+                  val implicitArgs = gtree.args.map(forSyntheticOrOrig(false))
+                  val innerTree = forSyntheticOrOrig(true)(gtree.fun)
                   s.ApplyTree(
                     function = innerTree,
                     arguments = implicitArgs
@@ -494,27 +494,18 @@ trait TextDocumentOps { self: SemanticdbOps =>
                   println("sym " + gtree.symbol.signatureString)
                   println("args " + gtree.args.map(_.summaryString))
 
-                  // this line changed to speculative continue iterating down into the tree.
-                  // it's also why we need the change in the fallback branch below.
-                  val implicitArgs = gtree.args.map(forSyntheticOrOrig)
-                  val innerTree = gtree.fun.toSemanticTree
                   s.ApplyTree(
-                    function = innerTree,
-                    arguments = implicitArgs
+                    function = gtree.fun.toSemanticTree,
+                    arguments = gtree.args.map(forSyntheticOrOrig(true))
                   )
                 case gtree: g.Apply if isForSynthetic(gtree) =>
-                  val fun = forMethodSelect(gtree.fun)
-                  val body = forMethodBody(gtree.args.head)
                   s.ApplyTree(
-                    function = fun,
-                    arguments = List(body)
+                    function = forMethodSelect(gtree.fun),
+                    arguments = List(forMethodBody(gtree.args.head))
                   )
+                case gtree if original=>
+                  gtree.toSemanticOriginal
                 case gtree =>
-                  // original version:
-                  // gtree.toSemanticOriginal
-                  // I guess a not original tree indicates some kind of enrichment, and the output we receive
-                  //  contains the data we're looking for after this change. There is a very high chance this
-                  //  should be done in the `ApplyImplicitView` branch above instead.
                   gtree.toSemanticTree
               }
             }
@@ -556,7 +547,7 @@ trait TextDocumentOps { self: SemanticdbOps =>
                       )
                     case gfun if isForSynthetic(gfun) =>
                       val range = gimpl.pos.toMeta.toRange
-                      val synthTree = forSyntheticOrOrig(gimpl)
+                      val synthTree = forSyntheticOrOrig(true)(gimpl)
                       synthetics += s.Synthetic(
                         range = Some(range),
                         tree = synthTree
@@ -608,7 +599,7 @@ trait TextDocumentOps { self: SemanticdbOps =>
                   )
                 case gtree if isForSynthetic(gtree) =>
                   val range = gtree.pos.toMeta.toRange
-                  val synthTree = forSyntheticOrOrig(gtree)
+                  val synthTree = forSyntheticOrOrig(true)(gtree)
                   synthetics += s.Synthetic(
                     range = Some(range),
                     tree = synthTree

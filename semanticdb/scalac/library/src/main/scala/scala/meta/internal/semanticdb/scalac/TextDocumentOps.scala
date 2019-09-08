@@ -483,6 +483,25 @@ trait TextDocumentOps { self: SemanticdbOps =>
                     function = innerTree,
                     arguments = implicitArgs
                   )
+
+                /**
+                  * I added this case because it's the tree we ended up with in the for comprehension test case
+                  * The body is copy/pasted from the branch above
+                  */
+                case gtree: g.ApplyImplicitView =>
+                  println("forSyntheticOrOrig " + gtree.summaryString)
+                  println("fun " + gtree.fun.summaryString)
+                  println("sym " + gtree.symbol.signatureString)
+                  println("args " + gtree.args.map(_.summaryString))
+
+                  // this line changed to speculative continue iterating down into the tree.
+                  // it's also why we need the change in the fallback branch below.
+                  val implicitArgs = gtree.args.map(forSyntheticOrOrig)
+                  val innerTree = gtree.fun.toSemanticTree
+                  s.ApplyTree(
+                    function = innerTree,
+                    arguments = implicitArgs
+                  )
                 case gtree: g.Apply if isForSynthetic(gtree) =>
                   val fun = forMethodSelect(gtree.fun)
                   val body = forMethodBody(gtree.args.head)
@@ -490,7 +509,13 @@ trait TextDocumentOps { self: SemanticdbOps =>
                     function = fun,
                     arguments = List(body)
                   )
-                case gtree => gtree.toSemanticOriginal
+                case gtree =>
+                  // original version:
+                  // gtree.toSemanticOriginal
+                  // I guess a not original tree indicates some kind of enrichment, and the output we receive
+                  //  contains the data we're looking for after this change. There is a very high chance this
+                  //  should be done in the `ApplyImplicitView` branch above instead.
+                  gtree.toSemanticTree
               }
             }
 

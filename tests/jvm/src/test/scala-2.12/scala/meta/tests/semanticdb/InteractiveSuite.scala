@@ -23,13 +23,22 @@ class InteractiveSuite extends FunSuite {
   }
 
   check(
-    """package b
-      |import scala.concurrent.Future
-      |object a {
-      |  val x = _root_.scala.List()
-      |  x + "string"
-      |}
-    """.stripMargin,
+    """
+import cats.Monad
+import cats.implicits._
+
+object ScalafixCatsSimpleImports {
+  val a: String = "a"
+  val b: BigInt = BigInt(200)
+  show"$a $b"
+
+  def foo[M[_]: Monad]: M[String] =
+    for {
+      r <- "en".pure[M]
+      _ <- "to".pure[M]
+    } yield r
+}
+""".stripMargin,
     // Note that scala don't resolve to a symbol, this is a sign that the
     // typer hijacking is not working as expected with interactive.Global.
     """|interactive.scala
@@ -40,43 +49,100 @@ class InteractiveSuite extends FunSuite {
        |Uri => interactive.scala
        |Text => non-empty
        |Language => Scala
-       |Symbols => 2 entries
-       |Occurrences => 10 entries
-       |Diagnostics => 1 entries
-       |Synthetics => 2 entries
+       |Symbols => 9 entries
+       |Occurrences => 25 entries
+       |Synthetics => 10 entries
        |
        |Symbols:
-       |b/a. => final object a extends AnyRef { +1 decls }
+       |_empty_/ScalafixCatsSimpleImports. => final object ScalafixCatsSimpleImports extends AnyRef { +3 decls }
        |  AnyRef => scala/AnyRef#
-       |b/a.x. => val method x: List[Nothing]
-       |  List => scala/collection/immutable/List#
-       |  Nothing => scala/Nothing#
+       |_empty_/ScalafixCatsSimpleImports.a. => val method a: String
+       |  String => scala/Predef.String#
+       |_empty_/ScalafixCatsSimpleImports.b. => val method b: BigInt
+       |  BigInt => scala/package.BigInt#
+       |_empty_/ScalafixCatsSimpleImports.foo(). => method foo[M[_]](implicit evidence$1: Monad[M]): M[String]
+       |  M => _empty_/ScalafixCatsSimpleImports.foo().[M]
+       |  _ => _empty_/ScalafixCatsSimpleImports.foo().[M][_]
+       |  evidence$1 => _empty_/ScalafixCatsSimpleImports.foo().(evidence$1)
+       |  Monad => cats/Monad#
+       |  String => scala/Predef.String#
+       |_empty_/ScalafixCatsSimpleImports.foo().(evidence$1) => implicit param evidence$1: Monad[M]
+       |  Monad => cats/Monad#
+       |  M => _empty_/ScalafixCatsSimpleImports.foo().[M]
+       |_empty_/ScalafixCatsSimpleImports.foo().[M] => typeparam M[_]
+       |  _ => _empty_/ScalafixCatsSimpleImports.foo().[M][_]
+       |_empty_/ScalafixCatsSimpleImports.foo().[M][_] => typeparam _
+       |local0 => param r: String
+       |  String => java/lang/String#
+       |local1 => param _: String
+       |  String => java/lang/String#
        |
        |Occurrences:
-       |[0:8..0:9): b <= b/
-       |[1:7..1:12): scala => scala/
-       |[1:13..1:23): concurrent => scala/concurrent/
-       |[1:24..1:30): Future => scala/concurrent/Future#
-       |[1:24..1:30): Future => scala/concurrent/Future.
-       |[2:7..2:8): a <= b/a.
-       |[3:6..3:7): x <= b/a.x.
-       |[3:23..3:27): List => scala/collection/immutable/List.
-       |[4:2..4:3): x => b/a.x.
-       |[4:4..4:5): + => scala/Predef.any2stringadd#`+`().
-       |
-       |Diagnostics:
-       |[1:24..1:30) [warning] Unused import
+       |[1:7..1:11): cats => cats/
+       |[1:12..1:17): Monad => cats/Monad#
+       |[1:12..1:17): Monad => cats/Monad.
+       |[2:7..2:11): cats => cats/
+       |[2:12..2:21): implicits => cats/implicits.
+       |[4:7..4:32): ScalafixCatsSimpleImports <= _empty_/ScalafixCatsSimpleImports.
+       |[5:6..5:7): a <= _empty_/ScalafixCatsSimpleImports.a.
+       |[5:9..5:15): String => scala/Predef.String#
+       |[6:6..6:7): b <= _empty_/ScalafixCatsSimpleImports.b.
+       |[6:9..6:15): BigInt => scala/package.BigInt#
+       |[6:18..6:24): BigInt => scala/package.BigInt.
+       |[7:2..7:6): show => cats/Show.ShowInterpolator#show().
+       |[7:8..7:9): a => cats/Show.Shown.mat().
+       |[7:11..7:12): b => cats/Show.Shown.mat().
+       |[9:6..9:9): foo <= _empty_/ScalafixCatsSimpleImports.foo().
+       |[9:10..9:11): M <= _empty_/ScalafixCatsSimpleImports.foo().[M]
+       |[9:16..9:21): Monad => cats/Monad#
+       |[9:24..9:25): M => _empty_/ScalafixCatsSimpleImports.foo().[M]
+       |[9:26..9:32): String => scala/Predef.String#
+       |[11:6..11:7): r <= local0
+       |[11:16..11:20): pure => cats/syntax/ApplicativeIdOps#pure().
+       |[11:21..11:22): M => _empty_/ScalafixCatsSimpleImports.foo().[M]
+       |[12:16..12:20): pure => cats/syntax/ApplicativeIdOps#pure().
+       |[12:21..12:22): M => _empty_/ScalafixCatsSimpleImports.foo().[M]
+       |[13:12..13:13): r => local0
        |
        |Synthetics:
-       |[3:10..3:27): _root_.scala.List => *.apply[Nothing]
-       |  apply => scala/collection/immutable/List.apply().
-       |  Nothing => scala/Nothing#
-       |[4:2..4:3): x => Predef.any2stringadd[List[Nothing]](*)
-       |  Predef => scala/Predef.
-       |  any2stringadd => scala/Predef.any2stringadd().
-       |  List => scala/collection/immutable/List#
-       |  Nothing => scala/Nothing#
-    """.stripMargin
+       |[6:18..6:24): BigInt => *.apply
+       |  apply => scala/math/BigInt.apply().
+       |[7:2..7:2):  => *.apply
+       |  apply => scala/StringContext.apply().
+       |[7:2..7:13): show"$a $b" => showInterpolator(*)
+       |  showInterpolator => cats/syntax/ShowSyntax#showInterpolator().
+       |[7:8..7:9): a => Shown.mat[String](*)(catsStdShowForString)
+       |  Shown => cats/Show.Shown.
+       |  mat => cats/Show.Shown.mat().
+       |  String => scala/Predef.String#
+       |  catsStdShowForString => cats/instances/StringInstances#catsStdShowForString.
+       |[7:11..7:12): b => Shown.mat[BigInt](*)(catsStdShowForBigInt)
+       |  Shown => cats/Show.Shown.
+       |  mat => cats/Show.Shown.mat().
+       |  BigInt => scala/package.BigInt#
+       |  catsStdShowForBigInt => cats/instances/BigIntInstances#catsStdShowForBigInt.
+       |[10:4..13:13): for {
+       |      r <- "en".pure[M]
+       |      _ <- "to".pure[M]
+       |    } yield r => orig("en".pure[M])(evidence$1).flatMap[String]({(r) => orig("to".pure[M])(evidence$1).map[String]({(_) => orig(r)})})
+       |  evidence$1 => _empty_/ScalafixCatsSimpleImports.foo().(evidence$1)
+       |  flatMap => cats/FlatMap.Ops#flatMap().
+       |  String => java/lang/String#
+       |  r => local0
+       |  map => cats/Functor.Ops#map().
+       |  _ => local1
+       |[11:11..11:15): "en" => implicits.catsSyntaxApplicativeId[String](*)
+       |  implicits => cats/implicits.
+       |  catsSyntaxApplicativeId => cats/syntax/ApplicativeSyntax#catsSyntaxApplicativeId().
+       |  String => java/lang/String#
+       |[11:11..11:23): "en".pure[M] => *(evidence$1)
+       |  evidence$1 => _empty_/ScalafixCatsSimpleImports.foo().(evidence$1)
+       |[12:11..12:15): "to" => implicits.catsSyntaxApplicativeId[String](*)
+       |  implicits => cats/implicits.
+       |  catsSyntaxApplicativeId => cats/syntax/ApplicativeSyntax#catsSyntaxApplicativeId().
+       |  String => java/lang/String#
+       |[12:11..12:23): "to".pure[M] => *(evidence$1)
+       |  evidence$1 => _empty_/ScalafixCatsSimpleImports.foo().(evidence$1)""".stripMargin
   )
 
   // This tests a case where SymbolOps.toSemantic crashes

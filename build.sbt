@@ -92,7 +92,9 @@ lazy val semanticdbScalacCore = project
     mimaPreviousArtifacts := Set.empty,
     moduleName := "semanticdb-scalac-core",
     description := "Library to generate SemanticDB from Scalac 2.x internal data structures",
-    libraryDependencies += "org.scala-lang" % "scala-compiler" % scalaVersion.value
+    libraryDependencies += "org.scala-lang" % "scala-compiler" % scalaVersion.value,
+    // to access cats classes in InteractiveSuite
+    libraryDependencies += "org.typelevel" %% "cats-core" % "2.0.0-M1"
   )
   .dependsOn(scalametaJVM)
 

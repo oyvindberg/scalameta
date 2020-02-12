@@ -18,25 +18,23 @@ class InteractiveSuite extends FunSuite {
       val document = toTextDocument(compiler, original, options)
       val format = scala.meta.metap.Format.Detailed
       val syntax = Print.document(format, document)
+//      println(syntax)
       assertNoDiff(syntax, expected)
     }
   }
 
   check(
     """
-import cats.Monad
-import cats.implicits._
+import scala.meta.tests.semanticdb.Sphynx._
 
-object ScalafixCatsSimpleImports {
-  val a: String = "a"
-  val b: BigInt = BigInt(200)
-  show"$a $b"
+object Bug {
 
-  def foo[M[_]: Monad]: M[String] =
+  def fun[F[_]: Monad, A](a1: A, a2: A): F[A] =
     for {
-      r <- "en".pure[M]
-      _ <- "to".pure[M]
-    } yield r
+      o1 <- a1.pure[F]
+      _ <- a2.pure[F]
+    } yield o1
+
 }
 """.stripMargin,
     // Note that scala don't resolve to a symbol, this is a sign that the
@@ -49,100 +47,86 @@ object ScalafixCatsSimpleImports {
        |Uri => interactive.scala
        |Text => non-empty
        |Language => Scala
-       |Symbols => 9 entries
-       |Occurrences => 25 entries
-       |Synthetics => 8 entries
+       |Symbols => 10 entries
+       |Occurrences => 24 entries
+       |Synthetics => 3 entries
        |
        |Symbols:
-       |_empty_/ScalafixCatsSimpleImports. => final object ScalafixCatsSimpleImports extends AnyRef { +3 decls }
+       |_empty_/Bug. => final object Bug extends AnyRef { +1 decls }
        |  AnyRef => scala/AnyRef#
-       |_empty_/ScalafixCatsSimpleImports.a. => val method a: String
-       |  String => scala/Predef.String#
-       |_empty_/ScalafixCatsSimpleImports.b. => val method b: BigInt
-       |  BigInt => scala/package.BigInt#
-       |_empty_/ScalafixCatsSimpleImports.foo(). => method foo[M[_]](implicit evidence$1: Monad[M]): M[String]
-       |  M => _empty_/ScalafixCatsSimpleImports.foo().[M]
-       |  _ => _empty_/ScalafixCatsSimpleImports.foo().[M][_]
-       |  evidence$1 => _empty_/ScalafixCatsSimpleImports.foo().(evidence$1)
-       |  Monad => cats/Monad#
-       |  String => scala/Predef.String#
-       |_empty_/ScalafixCatsSimpleImports.foo().(evidence$1) => implicit param evidence$1: Monad[M]
-       |  Monad => cats/Monad#
-       |  M => _empty_/ScalafixCatsSimpleImports.foo().[M]
-       |_empty_/ScalafixCatsSimpleImports.foo().[M] => typeparam M[_]
-       |  _ => _empty_/ScalafixCatsSimpleImports.foo().[M][_]
-       |_empty_/ScalafixCatsSimpleImports.foo().[M][_] => typeparam _
-       |local0 => param r: String
-       |  String => java/lang/String#
-       |local1 => param _: String
-       |  String => java/lang/String#
+       |_empty_/Bug.fun(). => method fun[F[_], A](a1: A, a2: A)(implicit evidence$1: Monad[F]): F[A]
+       |  F => _empty_/Bug.fun().[F]
+       |  _ => _empty_/Bug.fun().[F][_]
+       |  A => _empty_/Bug.fun().[A]
+       |  a1 => _empty_/Bug.fun().(a1)
+       |  a2 => _empty_/Bug.fun().(a2)
+       |  evidence$1 => _empty_/Bug.fun().(evidence$1)
+       |  Monad => scala/meta/tests/semanticdb/Sphynx.Monad#
+       |_empty_/Bug.fun().(a1) => param a1: A
+       |  A => _empty_/Bug.fun().[A]
+       |_empty_/Bug.fun().(a2) => param a2: A
+       |  A => _empty_/Bug.fun().[A]
+       |_empty_/Bug.fun().(evidence$1) => implicit param evidence$1: Monad[F]
+       |  Monad => scala/meta/tests/semanticdb/Sphynx.Monad#
+       |  F => _empty_/Bug.fun().[F]
+       |_empty_/Bug.fun().[A] => typeparam A
+       |_empty_/Bug.fun().[F] => typeparam F[_]
+       |  _ => _empty_/Bug.fun().[F][_]
+       |_empty_/Bug.fun().[F][_] => typeparam _
+       |local0 => param o1: A
+       |  A => _empty_/Bug.fun().[A]
+       |local1 => param _: A
+       |  A => _empty_/Bug.fun().[A]
        |
        |Occurrences:
-       |[1:7..1:11): cats => cats/
-       |[1:12..1:17): Monad => cats/Monad#
-       |[1:12..1:17): Monad => cats/Monad.
-       |[2:7..2:11): cats => cats/
-       |[2:12..2:21): implicits => cats/implicits.
-       |[4:7..4:32): ScalafixCatsSimpleImports <= _empty_/ScalafixCatsSimpleImports.
-       |[5:6..5:7): a <= _empty_/ScalafixCatsSimpleImports.a.
-       |[5:9..5:15): String => scala/Predef.String#
-       |[6:6..6:7): b <= _empty_/ScalafixCatsSimpleImports.b.
-       |[6:9..6:15): BigInt => scala/package.BigInt#
-       |[6:18..6:24): BigInt => scala/package.BigInt.
-       |[7:2..7:6): show => cats/Show.ShowInterpolator#show().
-       |[7:8..7:9): a => cats/Show.Shown.mat().
-       |[7:11..7:12): b => cats/Show.Shown.mat().
-       |[9:6..9:9): foo <= _empty_/ScalafixCatsSimpleImports.foo().
-       |[9:10..9:11): M <= _empty_/ScalafixCatsSimpleImports.foo().[M]
-       |[9:16..9:21): Monad => cats/Monad#
-       |[9:24..9:25): M => _empty_/ScalafixCatsSimpleImports.foo().[M]
-       |[9:26..9:32): String => scala/Predef.String#
-       |[11:6..11:7): r <= local0
-       |[11:16..11:20): pure => cats/syntax/ApplicativeIdOps#pure().
-       |[11:21..11:22): M => _empty_/ScalafixCatsSimpleImports.foo().[M]
-       |[12:16..12:20): pure => cats/syntax/ApplicativeIdOps#pure().
-       |[12:21..12:22): M => _empty_/ScalafixCatsSimpleImports.foo().[M]
-       |[13:12..13:13): r => local0
+       |[1:7..1:12): scala => scala/
+       |[1:13..1:17): meta => scala/meta/
+       |[1:18..1:23): tests => scala/meta/tests/
+       |[1:24..1:34): semanticdb => scala/meta/tests/semanticdb/
+       |[1:35..1:41): Sphynx => scala/meta/tests/semanticdb/Sphynx.
+       |[3:7..3:10): Bug <= _empty_/Bug.
+       |[5:6..5:9): fun <= _empty_/Bug.fun().
+       |[5:10..5:11): F <= _empty_/Bug.fun().[F]
+       |[5:16..5:21): Monad => scala/meta/tests/semanticdb/Sphynx.Monad#
+       |[5:23..5:24): A <= _empty_/Bug.fun().[A]
+       |[5:26..5:28): a1 <= _empty_/Bug.fun().(a1)
+       |[5:30..5:31): A => _empty_/Bug.fun().[A]
+       |[5:33..5:35): a2 <= _empty_/Bug.fun().(a2)
+       |[5:37..5:38): A => _empty_/Bug.fun().[A]
+       |[5:41..5:42): F => _empty_/Bug.fun().[F]
+       |[5:43..5:44): A => _empty_/Bug.fun().[A]
+       |[7:6..7:8): o1 <= local0
+       |[7:12..7:14): a1 => _empty_/Bug.fun().(a1)
+       |[7:15..7:19): pure => scala/meta/tests/semanticdb/Sphynx.ApplicativeIdOps#pure().
+       |[7:20..7:21): F => _empty_/Bug.fun().[F]
+       |[8:11..8:13): a2 => _empty_/Bug.fun().(a2)
+       |[8:14..8:18): pure => scala/meta/tests/semanticdb/Sphynx.ApplicativeIdOps#pure().
+       |[8:19..8:20): F => _empty_/Bug.fun().[F]
+       |[9:12..9:14): o1 => local0
        |
        |Synthetics:
-       |[6:18..6:24): BigInt => *.apply
-       |  apply => scala/math/BigInt.apply().
-       |[7:2..7:2):  => *.apply
-       |  apply => scala/StringContext.apply().
-       |[7:2..7:13): show"$a $b" => showInterpolator(*)
-       |  showInterpolator => cats/syntax/ShowSyntax#showInterpolator().
-       |[7:8..7:9): a => Shown.mat[String](*)(catsStdShowForString)
-       |  Shown => cats/Show.Shown.
-       |  mat => cats/Show.Shown.mat().
-       |  String => scala/Predef.String#
-       |  catsStdShowForString => cats/instances/StringInstances#catsStdShowForString.
-       |[7:11..7:12): b => Shown.mat[BigInt](*)(catsStdShowForBigInt)
-       |  Shown => cats/Show.Shown.
-       |  mat => cats/Show.Shown.mat().
-       |  BigInt => scala/package.BigInt#
-       |  catsStdShowForBigInt => cats/instances/BigIntInstances#catsStdShowForBigInt.
-       |[10:4..13:13): for {
-       |      r <- "en".pure[M]
-       |      _ <- "to".pure[M]
-       |    } yield r => implicits.toFlatMapOps[M, String](orig("en".pure[M])(evidence$1))(evidence$1).flatMap[String]({(r) => implicits.toFunctorOps[M, String](orig("to".pure[M])(evidence$1))(evidence$1).map[String]({(_) => orig(r)})})
-       |  implicits => cats/implicits.
-       |  toFlatMapOps => cats/FlatMap.ToFlatMapOps#toFlatMapOps().
-       |  M => _empty_/ScalafixCatsSimpleImports.foo().[M]
-       |  String => java/lang/String#
-       |  evidence$1 => _empty_/ScalafixCatsSimpleImports.foo().(evidence$1)
-       |  flatMap => cats/FlatMap.Ops#flatMap().
-       |  r => local0
-       |  toFunctorOps => cats/Functor.ToFunctorOps#toFunctorOps().
-       |  map => cats/Functor.Ops#map().
+       |[6:4..9:14): for {
+       |      o1 <- a1.pure[F]
+       |      _ <- a2.pure[F]
+       |    } yield o1 => Sphynx.ToFlatMapOps[F, A](orig(a1.pure[F])(evidence$1))(evidence$1).flatMap[A]({(o1) => Sphynx.ToFunctorOps[F, A](orig(a2.pure[F])(evidence$1))(evidence$1).map[A]({(_) => orig(o1)})})
+       |  Sphynx => scala/meta/tests/semanticdb/Sphynx.
+       |  ToFlatMapOps => scala/meta/tests/semanticdb/Sphynx.ToFlatMapOps().
+       |  F => _empty_/Bug.fun().[F]
+       |  A => _empty_/Bug.fun().[A]
+       |  evidence$1 => _empty_/Bug.fun().(evidence$1)
+       |  flatMap => scala/meta/tests/semanticdb/Sphynx.ToFlatMapOps#flatMap().
+       |  o1 => local0
+       |  ToFunctorOps => scala/meta/tests/semanticdb/Sphynx.ToFunctorOps().
+       |  map => scala/meta/tests/semanticdb/Sphynx.ToFunctorOps#map().
        |  _ => local1
-       |[11:11..11:15): "en" => implicits.catsSyntaxApplicativeId[String](*)
-       |  implicits => cats/implicits.
-       |  catsSyntaxApplicativeId => cats/syntax/ApplicativeSyntax#catsSyntaxApplicativeId().
-       |  String => java/lang/String#
-       |[12:11..12:15): "to" => implicits.catsSyntaxApplicativeId[String](*)
-       |  implicits => cats/implicits.
-       |  catsSyntaxApplicativeId => cats/syntax/ApplicativeSyntax#catsSyntaxApplicativeId().
-       |  String => java/lang/String#""".stripMargin
+       |[7:12..7:14): a1 => Sphynx.ApplicativeIdOps[A](*)
+       |  Sphynx => scala/meta/tests/semanticdb/Sphynx.
+       |  ApplicativeIdOps => scala/meta/tests/semanticdb/Sphynx.ApplicativeIdOps().
+       |  A => _empty_/Bug.fun().[A]
+       |[8:11..8:13): a2 => Sphynx.ApplicativeIdOps[A](*)
+       |  Sphynx => scala/meta/tests/semanticdb/Sphynx.
+       |  ApplicativeIdOps => scala/meta/tests/semanticdb/Sphynx.ApplicativeIdOps().
+       |  A => _empty_/Bug.fun().[A]""".stripMargin
   )
 
   // This tests a case where SymbolOps.toSemantic crashes

@@ -49,7 +49,7 @@ object Bug {
        |Language => Scala
        |Symbols => 10 entries
        |Occurrences => 24 entries
-       |Synthetics => 3 entries
+       |Synthetics => 5 entries
        |
        |Symbols:
        |_empty_/Bug. => final object Bug extends AnyRef { +1 decls }
@@ -108,7 +108,7 @@ object Bug {
        |[6:4..9:14): for {
        |      o1 <- a1.pure[F]
        |      _ <- a2.pure[F]
-       |    } yield o1 => Sphynx.ToFlatMapOps[F, A](orig(a1.pure[F])(evidence$1))(evidence$1).flatMap[A]({(o1) => Sphynx.ToFunctorOps[F, A](orig(a2.pure[F])(evidence$1))(evidence$1).map[A]({(_) => orig(o1)})})
+       |    } yield o1 => Sphynx.ToFlatMapOps[F, A](orig(a1.pure[F]))(evidence$1).flatMap[A]({(o1) => Sphynx.ToFunctorOps[F, A](orig(a2.pure[F]))(evidence$1).map[A]({(_) => orig(o1)})})
        |  Sphynx => scala/meta/tests/semanticdb/Sphynx.
        |  ToFlatMapOps => scala/meta/tests/semanticdb/Sphynx.ToFlatMapOps().
        |  F => _empty_/Bug.fun().[F]
@@ -123,10 +123,14 @@ object Bug {
        |  Sphynx => scala/meta/tests/semanticdb/Sphynx.
        |  ApplicativeIdOps => scala/meta/tests/semanticdb/Sphynx.ApplicativeIdOps().
        |  A => _empty_/Bug.fun().[A]
+       |[7:12..7:22): a1.pure[F] => *(evidence$1)
+       |  evidence$1 => _empty_/Bug.fun().(evidence$1)
        |[8:11..8:13): a2 => Sphynx.ApplicativeIdOps[A](*)
        |  Sphynx => scala/meta/tests/semanticdb/Sphynx.
        |  ApplicativeIdOps => scala/meta/tests/semanticdb/Sphynx.ApplicativeIdOps().
-       |  A => _empty_/Bug.fun().[A]""".stripMargin
+       |  A => _empty_/Bug.fun().[A]
+       |[8:11..8:21): a2.pure[F] => *(evidence$1)
+       |  evidence$1 => _empty_/Bug.fun().(evidence$1)""".stripMargin
   )
 
   // This tests a case where SymbolOps.toSemantic crashes

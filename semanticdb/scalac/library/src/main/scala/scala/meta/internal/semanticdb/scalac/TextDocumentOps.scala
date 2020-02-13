@@ -445,68 +445,45 @@ trait TextDocumentOps { self: SemanticdbOps =>
               }
             }
 
-            def forMethodSelect(gtree: g.Tree): s.Tree = {
-              isVisitedParent += gtree
+            def findForSynthetic(gtree: g.Tree): s.Tree = {
               gtree match {
                 case gtree: g.TypeApply =>
+                  isVisitedParent += gtree
                   val typeArguments = gtree.args.map(_.tpe.toSemanticTpe)
-                  val innerTree = forMethodSelect(gtree.fun)
-                  s.TypeApplyTree(
-                    function = innerTree,
-                    typeArguments = typeArguments
-                  )
-                case gtree: g.Select if isForSynthetic(gtree) =>
-                  val qualifier = forSyntheticOrOrig(true)(gtree.qualifier)
-                  s.SelectTree(
-                    qualifier = qualifier,
-                    id = Some(gtree.toSemanticId)
-                  )
-              }
-            }
+                  val innerTree = findForSynthetic(gtree.fun)
+                  s.TypeApplyTree(function = innerTree, typeArguments = typeArguments)
 
-            def forMethodBody(gtree: g.Tree): s.Tree = gtree match {
-              case gtree: g.Function =>
-                val names = gtree.vparams.map(_.toSemanticId)
-                val bodyTree = forSyntheticOrOrig(true)(gtree.body)
-                s.FunctionTree(names, bodyTree)
-              case _ =>
-                gtree.toSemanticOriginal
-            }
-
-            def forSyntheticOrOrig(original: Boolean)(gtree: g.Tree): s.Tree = {
-              isVisitedParent += gtree
-              gtree match {
                 case gtree: g.ApplyToImplicitArgs =>
-                  val implicitArgs = gtree.args.map(forSyntheticOrOrig(false))
-                  val innerTree = forSyntheticOrOrig(true)(gtree.fun)
-                  s.ApplyTree(
-                    function = innerTree,
-                    arguments = implicitArgs
-                  )
+                  isVisitedParent += gtree
+                  val implicitArgs = gtree.args.map(_.toSemanticTree)
+                  val innerTree = findForSynthetic(gtree.fun)
+                  gtree.args.foreach(tryFindMtree)
+                  s.ApplyTree(function = innerTree, arguments = implicitArgs)
 
-                /**
-                  * I added this case because it's the tree we ended up with in the for comprehension test case
-                  * The body is copy/pasted from the branch above
-                  */
                 case gtree: g.ApplyImplicitView =>
-                  println("forSyntheticOrOrig " + gtree.summaryString)
-                  println("fun " + gtree.fun.summaryString)
-                  println("sym " + gtree.symbol.signatureString)
-                  println("args " + gtree.args.map(_.summaryString))
+                  isVisitedParent += gtree
+                  val fun = gtree.fun.toSemanticTree
+                  val arg = gtree.args.head.toSemanticOriginal
+                  s.ApplyTree(function = fun, arguments = List(arg))
 
-                  s.ApplyTree(
-                    function = gtree.fun.toSemanticTree,
-                    arguments = gtree.args.map(forSyntheticOrOrig(true))
-                  )
+                case gtree: g.Select if isForSynthetic(gtree) =>
+                  isVisitedParent += gtree
+                  val qualifier = findForSynthetic(gtree.qualifier)
+                  s.SelectTree(qualifier = qualifier, id = Some(gtree.toSemanticId))
+
                 case gtree: g.Apply if isForSynthetic(gtree) =>
-                  s.ApplyTree(
-                    function = forMethodSelect(gtree.fun),
-                    arguments = List(forMethodBody(gtree.args.head))
-                  )
-                case gtree if original=>
-                  gtree.toSemanticOriginal
-                case gtree =>
-                  gtree.toSemanticTree
+                  isVisitedParent += gtree
+                  val fun = findForSynthetic(gtree.fun)
+                  val arg = findForSynthetic(gtree.args.head)
+                  s.ApplyTree(function = fun, arguments = List(arg))
+
+                case gtree: g.Function =>
+                  isVisitedParent += gtree
+                  val names = gtree.vparams.map(_.toSemanticId)
+                  val bodyTree = findForSynthetic(gtree.body)
+                  s.FunctionTree(names, bodyTree)
+
+                case gtree => gtree.toSemanticOriginal
               }
             }
 
@@ -547,7 +524,7 @@ trait TextDocumentOps { self: SemanticdbOps =>
                       )
                     case gfun if isForSynthetic(gfun) =>
                       val range = gimpl.pos.toMeta.toRange
-                      val synthTree = forSyntheticOrOrig(true)(gimpl)
+                      val synthTree = findForSynthetic(gimpl)
                       synthetics += s.Synthetic(
                         range = Some(range),
                         tree = synthTree
@@ -599,7 +576,7 @@ trait TextDocumentOps { self: SemanticdbOps =>
                   )
                 case gtree if isForSynthetic(gtree) =>
                   val range = gtree.pos.toMeta.toRange
-                  val synthTree = forSyntheticOrOrig(true)(gtree)
+                  val synthTree = findForSynthetic(gtree)
                   synthetics += s.Synthetic(
                     range = Some(range),
                     tree = synthTree

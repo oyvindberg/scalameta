@@ -146,6 +146,45 @@ $original
        |""".stripMargin
   )
 
+  checkSynthetics(
+    """
+      |for (x <- 1 to 10) println(x -> x)
+      |""".stripMargin,
+    """|[3:0..3:34): for (x <- 1 to 10) println(x -> x) => orig(1 to 10).foreach[Unit]({(local0) => orig(println(x -> x))})
+       |[3:10..3:11): 1 => intWrapper(*)
+       |[3:27..3:31): x -> => *[Int]
+       |[3:27..3:28): x => Predef.ArrowAssoc[Int](*)
+       |""".stripMargin
+  )
+
+  checkSynthetics(
+    """for (x <- List(1)) println(x)""".stripMargin,
+    """|[2:0..2:29): for (x <- List(1)) println(x) => orig(List(1)).foreach[Unit]({(local0) => orig(println(x))})
+       |[2:10..2:14): List => *.apply[Int]
+       |""".stripMargin
+  )
+
+  checkSynthetics(
+    """import scala.meta.tests.semanticdb.Sphynx._
+      |object Bug {
+      |  def fun[F[_]: Monad, A](a1: A, a2: A): F[A] =
+      |    for {
+      |      o1 <- a1.pure[F]
+      |      _ <- a2.pure[F]
+      |    } yield o1
+      |}
+      |""".stripMargin,
+    """|[5:4..8:14): for {
+       |      o1 <- a1.pure[F]
+       |      _ <- a2.pure[F]
+       |    } yield o1 => Sphynx.ToFlatMapOps[F, A](orig(a1.pure[F]))(evidence$1).flatMap[A]({(local0) => Sphynx.ToFunctorOps[F, A](orig(a2.pure[F]))(evidence$1).map[A]({(local1) => orig(o1)})})
+       |[6:12..6:22): a1.pure[F] => *(evidence$1)
+       |[6:12..6:14): a1 => Sphynx.ApplicativeIdOps[A](*)
+       |[7:11..7:21): a2.pure[F] => *(evidence$1)
+       |[7:11..7:13): a2 => Sphynx.ApplicativeIdOps[A](*)
+       |""".stripMargin
+  )
+
   checkTrees(
     "List(1).map(_ + 2)",
     """|orig(List(1).map(_ + 2))(List.canBuildFrom[Int])

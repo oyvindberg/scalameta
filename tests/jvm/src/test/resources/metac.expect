@@ -1543,8 +1543,7 @@ Synthetics:
     b <- List(1)
     if b > 1
     c = a + b
-  } yield (a, b, c) => apply(<?>).flatMap[Tuple3[Int, Int, Int], List[Tuple3[Int, Int, Int]]]({(a) => apply(<?>).withFilter({(b) => b.>(<?>)}).map[Tuple2[Int, Int], List[Tuple2[Int, Int]]]({(b) => <?>})(List.canBuildFrom[Tuple2[Int, Int]]).map[Tuple3[Int, Int, Int], List[Tuple3[Int, Int, Int]]]({(local2) => <?>})(List.canBuildFrom[Tuple3[Int, Int, Int]])})(List.canBuildFrom[Tuple3[Int, Int, Int]])
-  apply => scala/collection/immutable/List.apply().
+  } yield (a, b, c) => orig(List(1)).flatMap[Tuple3[Int, Int, Int], List[Tuple3[Int, Int, Int]]]({(a) => orig(List(1)).withFilter({(b) => orig(b > 1)}).map[Tuple2[Int, Int], List[Tuple2[Int, Int]]]({(b) => orig(c = a + b)})(List.canBuildFrom[Tuple2[Int, Int]]).map[Tuple3[Int, Int, Int], List[Tuple3[Int, Int, Int]]]({(local2) => orig((a, b, c))})(List.canBuildFrom[Tuple3[Int, Int, Int]])})(List.canBuildFrom[Tuple3[Int, Int, Int]])
   flatMap => scala/collection/immutable/List#flatMap().
   Tuple3 => scala/Tuple3#
   Int => scala/Int#
@@ -1552,7 +1551,6 @@ Synthetics:
   a => local0
   withFilter => scala/collection/TraversableLike#withFilter().
   b => local1
-  > => scala/Int#`>`(+3).
   map => scala/collection/generic/FilterMonadic#map().
   Tuple2 => scala/Tuple2#
   List => scala/collection/immutable/List.
@@ -1598,8 +1596,39 @@ Synthetics:
       d,
       e,
       f
-    ) => apply(<?>).flatMap[Tuple6[Int, Int, Int, Int, Tuple4[Int, Int, Int, Int], Tuple4[Int, Int, Int, Int]], List[Tuple6[Int, Int, Int, Int, Tuple4[Int, Int, Int, Int], Tuple4[Int, Int, Int, Int]]]]({(a) => apply(a).withFilter({(b) => apply.==(apply(<?>, <?>))}).flatMap[Tuple6[Int, Int, Int, Int, Tuple4[Int, Int, Int, Int], Tuple4[Int, Int, Int, Int]], List[Tuple6[Int, Int, Int, Int, Tuple4[Int, Int, Int, Int], Tuple4[Int, Int, Int, Int]]]]({(b) => apply(apply(a, b)).withFilter({(check$ifrefutable$1) => <?>}).withFilter({(local7) => <?>}).map[Tuple2[Tuple2[Int, Int], Tuple4[Int, Int, Int, Int]], List[Tuple2[Tuple2[Int, Int], Tuple4[Int, Int, Int, Int]]]]({(local8) => <?>})(List.canBuildFrom[Tuple2[Tuple2[Int, Int], Tuple4[Int, Int, Int, Int]]]).withFilter({(local9) => <?>}).flatMap[Tuple6[Int, Int, Int, Int, Tuple4[Int, Int, Int, Int], Tuple4[Int, Int, Int, Int]], List[Tuple6[Int, Int, Int, Int, Tuple4[Int, Int, Int, Int], Tuple4[Int, Int, Int, Int]]]]({(local10) => <?>})(List.canBuildFrom[Tuple6[Int, Int, Int, Int, Tuple4[Int, Int, Int, Int], Tuple4[Int, Int, Int, Int]]])})(List.canBuildFrom[Tuple6[Int, Int, Int, Int, Tuple4[Int, Int, Int, Int], Tuple4[Int, Int, Int, Int]]])})(List.canBuildFrom[Tuple6[Int, Int, Int, Int, Tuple4[Int, Int, Int, Int], Tuple4[Int, Int, Int, Int]]])
-  apply => scala/collection/immutable/List.apply().
+    ) => orig(List(1)).flatMap[Tuple6[Int, Int, Int, Int, Tuple4[Int, Int, Int, Int], Tuple4[Int, Int, Int, Int]], List[Tuple6[Int, Int, Int, Int, Tuple4[Int, Int, Int, Int], Tuple4[Int, Int, Int, Int]]]]({(a) => orig(List(a)).withFilter({(b) => orig((
+      a,
+      b
+    ) == (1, 2))}).flatMap[Tuple6[Int, Int, Int, Int, Tuple4[Int, Int, Int, Int], Tuple4[Int, Int, Int, Int]], List[Tuple6[Int, Int, Int, Int, Tuple4[Int, Int, Int, Int], Tuple4[Int, Int, Int, Int]]]]({(b) => orig(List((a, b))).withFilter({(check$ifrefutable$1) => orig()}).withFilter({(local7) => orig((
+      a,
+      b,
+      c,
+      d
+    ) == (1, 2, 3, 4))}).map[Tuple2[Tuple2[Int, Int], Tuple4[Int, Int, Int, Int]], List[Tuple2[Tuple2[Int, Int], Tuple4[Int, Int, Int, Int]]]]({(local8) => orig((
+      c,
+      d
+    ) <- List((a, b))
+    if (
+      a,
+      b,
+      c,
+      d
+    ) == (1, 2, 3, 4)
+    e = (
+      a,
+      b,
+      c,
+      d
+    ))})(List.canBuildFrom[Tuple2[Tuple2[Int, Int], Tuple4[Int, Int, Int, Int]]]).withFilter({(local9) => orig(e == (1, 2, 3, 4))}).flatMap[Tuple6[Int, Int, Int, Int, Tuple4[Int, Int, Int, Int], Tuple4[Int, Int, Int, Int]], List[Tuple6[Int, Int, Int, Int, Tuple4[Int, Int, Int, Int], Tuple4[Int, Int, Int, Int]]]]({(local10) => orig(f <- List(e)
+  } yield {
+    (
+      a,
+      b,
+      c,
+      d,
+      e,
+      f
+    ))})(List.canBuildFrom[Tuple6[Int, Int, Int, Int, Tuple4[Int, Int, Int, Int], Tuple4[Int, Int, Int, Int]]])})(List.canBuildFrom[Tuple6[Int, Int, Int, Int, Tuple4[Int, Int, Int, Int], Tuple4[Int, Int, Int, Int]]])})(List.canBuildFrom[Tuple6[Int, Int, Int, Int, Tuple4[Int, Int, Int, Int], Tuple4[Int, Int, Int, Int]]])
   flatMap => scala/collection/immutable/List#flatMap().
   Tuple6 => scala/Tuple6#
   Int => scala/Int#
@@ -1608,8 +1637,6 @@ Synthetics:
   a => local4
   withFilter => scala/collection/TraversableLike#withFilter().
   b => local5
-  apply => scala/Tuple2.apply().
-  == => java/lang/Object#`==`().
   flatMap => scala/collection/generic/FilterMonadic#flatMap().
   check$ifrefutable$1 => local6
   withFilter => scala/collection/generic/FilterMonadic#withFilter().
@@ -1657,20 +1684,20 @@ Synthetics:
       d,
       e,
       f
-    ) => apply(e).map[Tuple6[Int, Int, Int, Int, Tuple4[Int, Int, Int, Int], Tuple4[Int, Int, Int, Int]], List[Tuple6[Int, Int, Int, Int, Tuple4[Int, Int, Int, Int], Tuple4[Int, Int, Int, Int]]]]({(f) => apply(a, b, c, d, e, f)})(List.canBuildFrom[Tuple6[Int, Int, Int, Int, Tuple4[Int, Int, Int, Int], Tuple4[Int, Int, Int, Int]]])
-  apply => scala/collection/immutable/List.apply().
-  e => local14
+    ) => orig(List(e)).map[Tuple6[Int, Int, Int, Int, Tuple4[Int, Int, Int, Int], Tuple4[Int, Int, Int, Int]], List[Tuple6[Int, Int, Int, Int, Tuple4[Int, Int, Int, Int], Tuple4[Int, Int, Int, Int]]]]({(f) => orig((
+      a,
+      b,
+      c,
+      d,
+      e,
+      f
+    ))})(List.canBuildFrom[Tuple6[Int, Int, Int, Int, Tuple4[Int, Int, Int, Int], Tuple4[Int, Int, Int, Int]]])
   map => scala/collection/immutable/List#map().
   Tuple6 => scala/Tuple6#
   Int => scala/Int#
   Tuple4 => scala/Tuple4#
   List => scala/collection/immutable/List#
   f => local15
-  apply => scala/Tuple6.apply().
-  a => local4
-  b => local5
-  c => local11
-  d => local12
   List => scala/collection/immutable/List.
   canBuildFrom => scala/collection/immutable/List.canBuildFrom().
 [33:9..33:13): List => *.apply[Tuple4[Int, Int, Int, Int]]
@@ -3630,17 +3657,11 @@ Synthetics:
   any2stringadd => scala/Predef.any2stringadd().
   Stream => scala/collection/immutable/Stream#
   Int => scala/Int#
-[16:2..16:53): for (x <- 1 to 10; y <- 0 until 10) println(x -> x) => intWrapper.to(<?>).foreach[Unit]({(x) => intWrapper.until(<?>).foreach[Unit]({(y) => Predef.println(->(x))})})
-  intWrapper => scala/LowPriorityImplicits#intWrapper().
-  to => scala/runtime/RichInt#to().
+[16:2..16:53): for (x <- 1 to 10; y <- 0 until 10) println(x -> x) => orig(1 to 10).foreach[Unit]({(x) => orig(0 until 10).foreach[Unit]({(y) => orig(println(x -> x))})})
   foreach => scala/collection/immutable/Range#foreach().
   Unit => scala/Unit#
   x => local7
-  until => scala/runtime/RichInt#until().
   y => local8
-  Predef => scala/Predef.
-  println => scala/Predef.println(+1).
-  -> => scala/Predef.ArrowAssoc#`->`().
 [16:12..16:13): 1 => intWrapper(*)
   intWrapper => scala/LowPriorityImplicits#intWrapper().
 [16:26..16:27): 0 => intWrapper(*)
@@ -3651,39 +3672,29 @@ Synthetics:
   Int => scala/Int#
 [16:46..16:50): x -> => *[Int]
   Int => scala/Int#
-[17:2..17:50): for (i <- 1 to 10; j <- 0 until 10) yield (i, j) => intWrapper.to(<?>).flatMap[Tuple2[Int, Int], IndexedSeq[Tuple2[Int, Int]]]({(i) => intWrapper.until(<?>).map[Tuple2[Int, Int], IndexedSeq[Tuple2[Int, Int]]]({(j) => apply(i, j)})(IndexedSeq.canBuildFrom[Tuple2[Int, Int]])})(IndexedSeq.canBuildFrom[Tuple2[Int, Int]])
-  intWrapper => scala/LowPriorityImplicits#intWrapper().
-  to => scala/runtime/RichInt#to().
+[17:2..17:50): for (i <- 1 to 10; j <- 0 until 10) yield (i, j) => orig(1 to 10).flatMap[Tuple2[Int, Int], IndexedSeq[Tuple2[Int, Int]]]({(i) => orig(0 until 10).map[Tuple2[Int, Int], IndexedSeq[Tuple2[Int, Int]]]({(j) => orig((i, j))})(IndexedSeq.canBuildFrom[Tuple2[Int, Int]])})(IndexedSeq.canBuildFrom[Tuple2[Int, Int]])
   flatMap => scala/collection/TraversableLike#flatMap().
   Tuple2 => scala/Tuple2#
   Int => scala/Int#
   IndexedSeq => scala/collection/immutable/IndexedSeq#
   i => local9
-  until => scala/runtime/RichInt#until().
   map => scala/collection/TraversableLike#map().
   j => local10
-  apply => scala/Tuple2.apply().
   IndexedSeq => scala/collection/immutable/IndexedSeq.
   canBuildFrom => scala/collection/immutable/IndexedSeq.canBuildFrom().
 [17:12..17:13): 1 => intWrapper(*)
   intWrapper => scala/LowPriorityImplicits#intWrapper().
 [17:26..17:27): 0 => intWrapper(*)
   intWrapper => scala/LowPriorityImplicits#intWrapper().
-[18:2..18:64): for (i <- 1 to 10; j <- 0 until 10 if i % 2 == 0) yield (i, j) => intWrapper.to(<?>).flatMap[Tuple2[Int, Int], IndexedSeq[Tuple2[Int, Int]]]({(i) => intWrapper.until(<?>).withFilter({(j) => %.==(<?>)}).map[Tuple2[Int, Int], IndexedSeq[Tuple2[Int, Int]]]({(j) => apply(i, j)})(IndexedSeq.canBuildFrom[Tuple2[Int, Int]])})(IndexedSeq.canBuildFrom[Tuple2[Int, Int]])
-  intWrapper => scala/LowPriorityImplicits#intWrapper().
-  to => scala/runtime/RichInt#to().
+[18:2..18:64): for (i <- 1 to 10; j <- 0 until 10 if i % 2 == 0) yield (i, j) => orig(1 to 10).flatMap[Tuple2[Int, Int], IndexedSeq[Tuple2[Int, Int]]]({(i) => orig(0 until 10).withFilter({(j) => orig(i % 2 == 0)}).map[Tuple2[Int, Int], IndexedSeq[Tuple2[Int, Int]]]({(j) => orig((i, j))})(IndexedSeq.canBuildFrom[Tuple2[Int, Int]])})(IndexedSeq.canBuildFrom[Tuple2[Int, Int]])
   flatMap => scala/collection/TraversableLike#flatMap().
   Tuple2 => scala/Tuple2#
   Int => scala/Int#
   IndexedSeq => scala/collection/immutable/IndexedSeq#
   i => local11
-  until => scala/runtime/RichInt#until().
   withFilter => scala/collection/TraversableLike#withFilter().
   j => local12
-  % => scala/Int#`%`(+3).
-  == => scala/Int#`==`(+3).
   map => scala/collection/generic/FilterMonadic#map().
-  apply => scala/Tuple2.apply().
   IndexedSeq => scala/collection/immutable/IndexedSeq.
   canBuildFrom => scala/collection/immutable/IndexedSeq.canBuildFrom().
 [18:12..18:13): 1 => intWrapper(*)
@@ -3706,14 +3717,11 @@ Synthetics:
 [36:2..39:14): for {
     a <- scala.concurrent.Future.successful(1)
     b <- scala.concurrent.Future.successful(2)
-  } println(a) => successful(<?>).foreach[Unit]({(a) => successful(<?>).foreach[Unit]({(b) => Predef.println(a)})(global)})(global)
-  successful => scala/concurrent/Future.successful().
+  } println(a) => orig(scala.concurrent.Future.successful(1)).foreach[Unit]({(a) => orig(scala.concurrent.Future.successful(2)).foreach[Unit]({(b) => orig(println(a))})(global)})(global)
   foreach => scala/concurrent/Future#foreach().
   Unit => scala/Unit#
   a => local13
   b => local14
-  Predef => scala/Predef.
-  println => scala/Predef.println(+1).
   global => scala/concurrent/ExecutionContext.Implicits.global.
 [37:9..37:43): scala.concurrent.Future.successful => *[Int]
   Int => scala/Int#
@@ -3723,14 +3731,12 @@ Synthetics:
     a <- scala.concurrent.Future.successful(1)
     b <- scala.concurrent.Future.successful(2)
     if a < b
-  } yield a => successful(<?>).flatMap[Int]({(a) => successful(<?>).withFilter({(b) => a.<(b)})(global).map[Int]({(b) => a})(global)})(global)
-  successful => scala/concurrent/Future.successful().
+  } yield a => orig(scala.concurrent.Future.successful(1)).flatMap[Int]({(a) => orig(scala.concurrent.Future.successful(2)).withFilter({(b) => orig(a < b)})(global).map[Int]({(b) => orig(a)})(global)})(global)
   flatMap => scala/concurrent/Future#flatMap().
   Int => scala/Int#
   a => local15
   withFilter => scala/concurrent/Future#withFilter().
   b => local16
-  < => scala/Int#`<`(+3).
   global => scala/concurrent/ExecutionContext.Implicits.global.
   map => scala/concurrent/Future#map().
 [41:9..41:43): scala.concurrent.Future.successful => *[Int]

@@ -471,6 +471,19 @@ trait TextDocumentOps { self: SemanticdbOps =>
                   val qualifier = findForSynthetic(gtree.qualifier)
                   s.SelectTree(qualifier = qualifier, id = Some(gtree.toSemanticId))
 
+                //todo: we need to find out if this is a nested for comprehension
+                case gtree @ g.Apply(_, (fn: g.Function) :: Nil) if isForSynthetic(gtree) =>
+                  isVisitedParent += gtree
+                  val arg = findForSynthetic(fn)
+                  val tree = s.ApplyTree(function = arg, arguments = List())
+                  val range = fn.body.pos.toMeta.toRange
+
+                  synthetics += s.Synthetic(
+                    range = Some(range),
+                    tree = tree
+                  )
+                  s.Tree.Empty
+
                 case gtree: g.Apply if isForSynthetic(gtree) =>
                   isVisitedParent += gtree
                   val fun = findForSynthetic(gtree.fun)
@@ -483,7 +496,8 @@ trait TextDocumentOps { self: SemanticdbOps =>
                   val bodyTree = findForSynthetic(gtree.body)
                   s.FunctionTree(names, bodyTree)
 
-                case gtree => gtree.toSemanticOriginal
+//                case gtree => gtree.toSemanticOriginal
+                case gtree => s.Tree.Empty
               }
             }
 
@@ -525,10 +539,11 @@ trait TextDocumentOps { self: SemanticdbOps =>
                     case gfun if isForSynthetic(gfun) =>
                       val range = gimpl.pos.toMeta.toRange
                       val synthTree = findForSynthetic(gimpl)
-                      synthetics += s.Synthetic(
-                        range = Some(range),
-                        tree = synthTree
-                      )
+                      if (synthTree != s.Tree.Empty)
+                        synthetics += s.Synthetic(
+                          range = Some(range),
+                          tree = synthTree
+                        )
                     case gfun =>
                       synthetics += s.Synthetic(
                         range = Some(gfun.pos.toMeta.toRange),
@@ -577,10 +592,11 @@ trait TextDocumentOps { self: SemanticdbOps =>
                 case gtree if isForSynthetic(gtree) =>
                   val range = gtree.pos.toMeta.toRange
                   val synthTree = findForSynthetic(gtree)
-                  synthetics += s.Synthetic(
-                    range = Some(range),
-                    tree = synthTree
-                  )
+                  if (synthTree != s.Tree.Empty)
+                    synthetics += s.Synthetic(
+                      range = Some(range),
+                      tree = synthTree
+                    )
                 case _ =>
                 // do nothing
               }
